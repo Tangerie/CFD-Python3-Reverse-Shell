@@ -61,15 +61,27 @@ def receive():
 				files.append(str(file) + ' <DIR>')
 			else:
 				files.append(str(file))
-		args = currentPath + '\\' + '\n' + '\n'.join(files)
+		args = '\n' + '\n'.join(files)
 
 	elif checkCom('cd'):
-		os.chdir(received)
-		currentPath = os.getcwd()
-		args = 'Changed Current Directory to: ' + currentPath
+		if os.path.isdir(received):
+			os.chdir(received)
+			currentPath = os.getcwd()
+			args = 'Changed Current Directory to: ' + currentPath
+		elif received == '~':
+			os.chdir(os.path.expanduser('~'))
+			currentPath = os.getcwd()
+			args = 'Changed Current Directory to: ' + currentPath
+		else:
+			args = '"' + received + '" Is not a Directory'
+
+	elif checkCom('cat'):
+		f = open(received)
+		args = f.read()
+		f.close()
 
 	else:
-		args = 'No Valid Input Given'
+		args = 'Command: "' + received + '" Is Not Recognised'
 
 	send(args)
 
