@@ -57,8 +57,6 @@ def menu():
 			conn.close()
 			s.close()
 			sys.exit()
-		elif cmd == 'keylog':
-			os.system('start python keylogServer.py 4445')
 
 		command = conn.send(cmd.encode('utf8'))
 		result = conn.recv(16834).decode()

