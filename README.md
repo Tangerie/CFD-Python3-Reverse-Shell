@@ -4,29 +4,29 @@
 
 ###### Server Side
 1. Install needed python components
-	
+	```
 	pip install -r requirements.txt
-	
+	```
 
 2. Start server with:
-	
+	```
 	python Server/server.py
-	
+	```
 	And enter the port number you wish to use
 
 3. Run keylogServer.py
-
+	```
 	python Server/keylogServer.py [desired port]
-	
+	```
 	Note this port must be different from the one entered beforehand
 
 4. Edit clientWindows.py and change your host and port to those of your server, make sure to enter the first port you entered into server.py
 
 ###### Client Side
 1. Run clientWindows.py with
-	
+	```
 	python Client/clientWindows.py
-	
+	```
 	Or compile clientWindows.py into and exe with pythoninstaller and run it as normal
 
 ## Commands
