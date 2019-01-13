@@ -87,7 +87,7 @@
 
 	Runs the keylogger on given port, make sure to run keylogServer.py and use the same port for both commands
 
-*NOTE - Keylogger currently only works on windows, it is untested on other platforms and will definitely crash*
+*NOTE - Keylogger currently only works on windows, it is untested on other platforms and will may crash/not work*
 
 **killkeylog**
 
