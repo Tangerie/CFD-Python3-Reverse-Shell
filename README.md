@@ -30,23 +30,23 @@
 	Or compile clientWindows.py into and exe with pythoninstaller and run it as normal
 
 ## Commands
-'quit'
+**quit**
 	Exits the shell on both server and client sides
-'shell'
+**shell**
 	Runs commands in that OSes shell
-- 'shellThread'
+**shellThread**
 	Same as shell but runs commands on a separate thread incase they dont exit(note, you cannot return values from this command)
-- 'cwd'
+**cwd**
 	Returns the current directory
-- 'ls'
+**ls**
 	Lists files and folders in current directory
-- 'cd [directory]'
+**cd [*directory*]**
 	Changes to given directory
-- 'cat [filename]'
+**cat [*filename*]**
 	Outputs contents of the given file, note: only works with human readable files, it will crash otherwise
-- 'keylog [port]'
+**keylog [*port*]**
 	Runs the keylogger on given port, make sure to run keylogServer.py and use the same port for both commands
-- 'killkeylog'
+**killkeylog**
 	Kills the keylogger if currently running
 
 ## TODO
