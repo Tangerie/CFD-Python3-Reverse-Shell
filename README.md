@@ -30,7 +30,7 @@
 	Or compile clientWindows.py into and exe with pythoninstaller and run it as normal
 
 ## Commands
-- 'quit':
+- 'quit':\n
 	Exits the shell on both server and client sides
 - 'shell'
 	Runs commands in that OSes shell
