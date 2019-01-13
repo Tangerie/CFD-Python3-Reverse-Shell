@@ -2,6 +2,13 @@
 
 ## Setup
 
+##### Installing Python
+*NOTE - Both sides require python to run, **unless** they are packaged as executables with pyinstaller*
+1. Download python 3.7
+	[From Here](https://www.python.org/downloads/)
+
+2. Install the downloaded file
+
 ###### Server Side
 1. Install needed python components
 
