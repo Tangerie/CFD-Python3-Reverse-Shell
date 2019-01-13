@@ -30,6 +30,8 @@
 	Or compile clientWindows.py into and exe with pythoninstaller and run it as normal
 
 ## Commands
+*Note: Commands ignore captilisation, but arguments maintain capitilisation*
+
 **quit**
 
 	Exits the shell on both server and client sides
