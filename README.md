@@ -4,34 +4,28 @@
 
 ###### Server Side
 1. Install needed python components
-	```
-	pip install -r requirements.txt
-	```
+
+		pip install -r requirements.txt
 
 2. Start server with:
-	```
-	python Server/server.py
-	```
+
+		python Server/server.py
+
 	And enter the port number you wish to use
 
 	OR
 
-	```
-	python Server/server.py [desired port]
-	```
+		python Server/server.py [desired port]
 
 3. Run keylogServer.py
-	```
-	python Server/keylogServer.py
-	```
+		python Server/keylogServer.py
 
 	And enter the desired port
 
 	OR
 
-	```
-	python Server/keylogServer.py [desired port]
-	```
+		python Server/keylogServer.py [desired port]
+
 	*Note this port must be different from the one entered beforehand*
 
 4. Edit clientWindows.py and change your host and port to those of your server, make sure to enter the first port you entered into server.py.
@@ -42,10 +36,10 @@
 
 ###### Client Side
 1. Run clientWindows.py with
-	```
-	python Client/clientWindows.py
-	```
-	Or compile clientWindows.py into and exe with pythoninstaller and run it as normal
+
+		python Client/clientWindows.py
+
+	Or compile clientWindows.py into and exe with pythoninstaller and run it as a normal executable
 
 ## Commands
 *Note: Commands ignore captilisation, but arguments maintain capitilisation*
@@ -93,6 +87,7 @@
 
 	Runs the keylogger on given port, make sure to run keylogServer.py and use the same port for both commands
 
+*NOTE - Keylogger currently only works on windows, it is untested on other platforms and will definitely crash*
 
 **killkeylog**
 
