@@ -1,6 +1,5 @@
 import socket, os, sys
 
-port = int(sys.argv[1])
 killed = False
 
 def createSocket():
@@ -11,6 +10,16 @@ def createSocket():
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		host = ''
+
+		try:
+			port = sys.argv[1]
+		except:
+			port = input('Type Port For Listening: ')
+
+		while not port:
+			port = input('Type Port For Listening: ')
+
+		port = int(port)
 
 	except socket.error as msg:
 		print('Socket Error:', msg)

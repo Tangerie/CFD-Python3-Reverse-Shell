@@ -7,10 +7,14 @@ def createSocket():
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		host = ''
-		port = input('Type Port For Listening: ')
+		try:
+			port = sys.argv[1]
+		except:
+			port = input('Type Port For Listening: ')
 
-		if port == '':
-			createSocket()
+		while not port:
+			port = input('Type Port For Listening: ')
+
 		port = int(port)
 	except socket.error as msg:
 		print('Socket Error:', msg)

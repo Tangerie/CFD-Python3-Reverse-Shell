@@ -14,13 +14,31 @@
 	```
 	And enter the port number you wish to use
 
+	OR
+
+	```
+	python Server/server.py [desired port]
+	```
+
 3. Run keylogServer.py
+	```
+	python Server/keylogServer.py
+	```
+
+	And enter the desired port
+
+	OR
+
 	```
 	python Server/keylogServer.py [desired port]
 	```
-	Note this port must be different from the one entered beforehand
+	*Note this port must be different from the one entered beforehand*
 
-4. Edit clientWindows.py and change your host and port to those of your server, make sure to enter the first port you entered into server.py
+4. Edit clientWindows.py and change your host and port to those of your server, make sure to enter the first port you entered into server.py.
+	
+	OR
+
+	Add in a url for port and host, the program will retrieve its port or ip from that url in raw text form
 
 ###### Client Side
 1. Run clientWindows.py with
@@ -34,7 +52,11 @@
 
 **quit**
 
-	Exits the shell on both server and client sides
+	Cleanly shuts the connection on both server and client sides and quits the client service - NOTE: Only recommended for removal as all control is lost until client run again
+
+**reset**
+	
+	Cuts the connection, but does not quit the client - Recommened if you just need to restart the connection
 
 
 **shell**
@@ -80,4 +102,5 @@
 ## TODO
  - [X] Make Keylogger
  - [X] Add Keylogger to program
+ - [ ]
  - [ ] Add extra commands

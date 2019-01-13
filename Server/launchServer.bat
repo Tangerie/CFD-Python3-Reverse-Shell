@@ -1,4 +1,4 @@
 :run
-python server.py
+python server.py 4444
 pause
 GOTO run

