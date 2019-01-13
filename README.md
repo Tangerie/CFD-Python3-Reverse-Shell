@@ -102,5 +102,4 @@
 ## TODO
  - [X] Make Keylogger
  - [X] Add Keylogger to program
- - [ ]
  - [ ] Add extra commands
