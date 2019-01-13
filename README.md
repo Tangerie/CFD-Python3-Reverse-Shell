@@ -31,38 +31,49 @@
 
 ## Commands
 **quit**
-	```
+
 	Exits the shell on both server and client sides
-	```
+
 
 **shell**
+
 	Runs commands in that OSes shell
 
+
 **shellThread**
+
 	Same as shell but runs commands on a separate thread incase they dont exit(note, you cannot return values from this command)
 
+
 **cwd**
+
 	Returns the current directory
 
+
 **ls**
+
 	Lists files and folders in current directory
-	
+
+
 **cd [*directory*]**
-	```
+
 	Changes to given directory
-	```
+
+
 **cat [*filename*]**
-	```
+
 	Outputs contents of the given file, note: only works with human readable files, it will crash otherwise
-	```
+
+
 **keylog [*port*]**
-	```
+
 	Runs the keylogger on given port, make sure to run keylogServer.py and use the same port for both commands
-	```
+
+
 **killkeylog**
-	```
+
 	Kills the keylogger if currently running
-	```
+
 
 ## TODO
  - [X] Make Keylogger
