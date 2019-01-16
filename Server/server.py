@@ -1,4 +1,4 @@
-import socket, os, sys, time
+import socket, os, sys, time, base64
 def createSocket():
 	try:
 		global host
@@ -64,8 +64,8 @@ def menu():
 			s.close()
 			sys.exit()
 
-		command = conn.send(cmd.encode('utf8'))
-		result = conn.recv(16834).decode()
+		command = conn.send(base64.encodebytes(cmd.encode('utf8')))
+		result = base64.decodebytes(conn.recv(16834)).decode()
 
 		if result[:12] == 'currentPath:':
 			currentPath = result[12:]
