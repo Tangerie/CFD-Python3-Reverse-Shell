@@ -7,6 +7,8 @@ availablePorts = [1338, 1339, 1340]
 deletePortFile = "delPort.txt"
 currentPortsFile = "currentPorts.txt"
 
+serverIP = "localhost"
+
 loopTime = 5
 
 def createSocket():
@@ -80,24 +82,26 @@ def acceptSocket():
 
 		connectedPorts.append(sentPort)
 		updatePortFile()
-		conn.send(str(sentPort).encode('utf8'))
+		conn.send((str(sentPort) + "," + serverIP).encode('utf8'))
 		conn.close()
-		print(hostname + "(" + operatingSystem + ") - " + str(sentPort))
+		print(hostname + "(" + operatingSystem + ") - " + str(sentPort) + ' - ' + serverIP)
 	except socket.error as msg:
-		print('Socket Accepting Error:', msg)
+		pass
+
 
 def updatePortFile():
 	f = open(currentPortsFile, "w+")
-	print(len(connectedPorts))
 	for i in range(len(connectedPorts)):
-		f.write(connectedPortInfo[i][0] + "(" + connectedPortInfo[i][1] + ") - " + str(connectedPorts[i]))
+		f.write(connectedPortInfo[i][0] + "(" + connectedPortInfo[i][1] + ") - " + str(connectedPorts[i]) + ' - ' + serverIP + "\n")
 	f.close()
 
 def main():
+	if os.path.isfile(deletePortFile):
+		os.remove(deletePortFile)
+
 	createSocket()
 	bindSocket()
 	while True:
-		print("Accepting Socket")
 		acceptSocket()
 
 main()

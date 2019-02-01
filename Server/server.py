@@ -1,4 +1,7 @@
 import socket, os, sys, time, base64
+
+delPortFile = "delPort.txt"
+
 def createSocket():
 	try:
 		global host
@@ -57,7 +60,10 @@ def menu():
 		cmd = input(hostname + '(' + operatingSystem + ')@' + currentPath + '> ')
 		while cmd == "":
 			cmd = input(hostname + '(' + operatingSystem + ')@' + currentPath + '> ')
-		if cmd == 'quit':
+		if cmd == 'exit':
+			f = open(delPortFile, "w+")
+			f.write(str(port))
+			f.close()
 			conn.send(cmd.encode('utf8'))
 			time.sleep(5)
 			conn.close()
